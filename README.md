@@ -11,7 +11,7 @@ Open the [deployed version](https://rvnka.github.io/modrinth-collection-download
 - `script.js` - app logic
 
 ## License
-[CC BY-NC 4.0](LICENSE) | [Official](https://creativecommons.org/licenses/by-nc/4.0/) - Attribution required (rvnka), non-commercial use only.
+[CC BY-NC 4.0](LICENSE) ([Official](https://creativecommons.org/licenses/by-nc/4.0/)) - Attribution required, non-commercial use only.
 
 ## Disclaimers
 This project is not affiliated with, endorsed by, or sponsored by Modrinth or Mojang.
