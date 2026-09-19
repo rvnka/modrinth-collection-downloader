@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modrinth Collection Downloader</title>
+  <meta name="author" content="rvnka" />
+  <meta name="theme-color" content="#0d1110" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#e7e5e0" media="(prefers-color-scheme: light)" />
+  <meta name="description" content="Batch download every file in a Modrinth collection, right in your browser. No server, no upload, no tracking." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='2' fill='%231bd96a'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.bunny.net" crossorigin />
+  <link rel="preconnect" href="https://api.modrinth.com" />
+  <link href="https://fonts.bunny.net/css2?family=Pixelify+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="script.js" defer></script>
+</head>
+
+<body>
+  <a class="skip-link" href="#resultCard">Skip to results</a>
+  <div class="wrap">
+    <header>
+      <a class="logo" href="#appForm" aria-label="Collection Downloader" title="Collection Downloader">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 3v11m0 0l-4-4m4 4l4-4" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M5 20h14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" />
+        </svg>
+      </a>
+      <hgroup>
+        <h1>Collection Downloader</h1>
+        <p>Batch download Modrinth collection files, right in your browser</p>
+      </hgroup>
+
+      <nav>
+        <a class="link link-icon" id="githubLink" href="#" target="_blank" rel="noopener noreferrer" hidden aria-label="GitHub repository">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
+          </svg>
+        </a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="card">
+        <form id="appForm" novalidate>
+          <fieldset id="formFields">
+            <div>
+              <label for="collectionId">Collection ID or URL</label>
+              <input type="text" id="collectionId" placeholder="9jkkgFTe or https://modrinth.com/collection/..." autocomplete="off" spellcheck="false" />
+            </div>
+
+            <div>
+              <label for="mcVersion">Minecraft version</label>
+              <div class="version-row">
+                <select id="mcVersion">
+                  <option value="">Loading versions...</option>
+                </select>
+                <div class="version-filters" role="group" aria-label="Show version channels">
+                  <label title="Releases"><input type="checkbox" id="vRelease" checked />R</label>
+                  <label title="Snapshots"><input type="checkbox" id="vSnapshot" />S</label>
+                  <label title="Beta"><input type="checkbox" id="vBeta" />B</label>
+                  <label title="Alpha"><input type="checkbox" id="vAlpha" />A</label>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label for="loader">Loader</label>
+              <select id="loader">
+                <option value="" disabled selected hidden>Select a mod/plugin loader...</option>
+              </select>
+            </div>
+
+            <details class="adv">
+              <summary>Advanced options</summary>
+              <div class="adv-body">
+                <fieldset class="chk-group" id="projectTypeGroup">
+                  <legend>Project types to include</legend>
+                  <div class="chk-row" id="projectTypeToggles"></div>
+                </fieldset>
+
+                <fieldset class="chk-group">
+                  <legend>Accepted release channels</legend>
+                  <div class="chk-row" id="channelToggles">
+                    <label><input type="checkbox" class="channel-chk" value="release" checked /> Release</label>
+                    <label><input type="checkbox" class="channel-chk" value="beta" /> Beta</label>
+                    <label><input type="checkbox" class="channel-chk" value="alpha" /> Alpha</label>
+                  </div>
+                </fieldset>
+
+                <fieldset class="chk-group">
+                  <legend>Dependencies</legend>
+                  <div class="chk-row">
+                    <label><input type="checkbox" id="depAuto" checked /> Auto-download dependencies</label>
+                  </div>
+                  <div class="chk-row sub-row" id="depSubRow">
+                    <label><input type="checkbox" id="depReq" checked /> Required</label>
+                    <label><input type="checkbox" id="depOpt" /> Optional</label>
+                  </div>
+                </fieldset>
+              </div>
+            </details>
+
+            <button class="btn-main" id="fetchBtn" type="submit">Fetch Collection</button>
+            <p class="error" id="formError" role="alert" hidden></p>
+          </fieldset>
+        </form>
+      </section>
+
+      <section class="card" id="resultCard" hidden>
+        <div class="results-head">
+          <div class="results-meta">
+            <div class="collection-info" id="collectionInfo"></div>
+            <dl class="stats" id="stats"></dl>
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary" id="downloadZipBtn" type="button" disabled>Download as ZIP</button>
+            <button class="btn" id="downloadAllBtn" type="button" disabled>Download All</button>
+            <button class="btn btn-danger" id="cancelBtn" type="button" hidden>Cancel</button>
+          </div>
+        </div>
+        <progress id="progressBar" max="100" value="0" hidden></progress>
+        <ul id="items"></ul>
+      </section>
+
+      <details class="card log" open>
+        <summary>
+          <span class="dot" aria-hidden="true"></span>Activity Log <span class="pill" id="logCount">0</span>
+          <span class="log-controls">
+            <button class="btn btn-sm" id="logCopyBtn" type="button">Copy</button>
+            <button class="btn btn-sm" id="logClearBtn" type="button">Clear</button>
+          </span>
+        </summary>
+        <ol id="logBody">
+          <li class="empty-note" id="logEmpty">No activity recorded yet.</li>
+        </ol>
+      </details>
+    </main>
+
+    <footer>
+      ©&nbsp;2026 rvnka · <a href="https://github.com/rvnka/modrinth-collection-downloader/blob/main/LICENSE" target="_blank" rel="noopener">CC BY-NC 4.0</a> · Not affiliated with
+      <a href="https://www.minecraft.net" target="_blank" rel="noopener">Minecraft</a> or
+      <a href="https://modrinth.com" target="_blank" rel="noopener">Modrinth</a>
+    </footer>
+  </div>
+</body>
+
+</html>
